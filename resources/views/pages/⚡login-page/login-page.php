@@ -1,36 +1,48 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Livewire\Component;
 
 new class extends Component
 {
-    public string $login = '';
+    public string $identifier = '';
     public string $password = '';
 
     protected function rules(): array
     {
         return [
-            'login' => ['required'],
+            'identifier' => ['required'],
             'password' => ['required'],
         ];
     }
 
-    public function login()
+    public function authenticate(): void
     {
-        $credentials = $this->validate();
+        $validated = $this->validate();
+        $identifier = trim($validated['identifier']);
+
+        $credentials = filter_var($identifier, FILTER_VALIDATE_EMAIL)
+            ? ['email' => $identifier, 'password' => $validated['password']]
+            : ['login' => $identifier, 'password' => $validated['password']];
 
         if (! Auth::attempt($credentials)) {
-            $this->addError('login', 'Неверный логин или пароль');
+            $this->addError('identifier', 'Неверный логин/email или пароль');
             return;
         }
 
         session()->regenerate();
 
         if (auth()->user()?->isAdmin()) {
-            return $this->redirect('/admin', navigate: true);
+            $this->redirect('/admin', navigate: true);
+            return;
         }
 
-        return $this->redirect('/dashboard', navigate: true);
+        if (Route::has('dashboard')) {
+            $this->redirectRoute('dashboard', navigate: true);
+            return;
+        }
+
+        $this->redirectRoute('home', navigate: true);
     }
 };
