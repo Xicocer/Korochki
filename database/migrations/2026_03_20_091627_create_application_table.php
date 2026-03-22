@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->onDelete('restrict');
             $table->date('start_date');
             $table->enum('payment_method', ['cash', 'transfer'])->default('cash');
-            $table->enum('status', ['Новая', 'Идет обучение', 'Обучение завершено'])->default('Новая');
+            $table->enum('status', ['Новая', 'Идет обучение', 'Обучение завершено','Заявка отклоненна'])->default('Новая');
             $table->text('review')->nullable();
             $table->timestamps();
             $table->index(['status', 'created_at']);
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('application');
+        Schema::dropIfExists('applications');
     }
 };

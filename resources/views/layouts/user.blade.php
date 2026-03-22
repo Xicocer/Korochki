@@ -46,7 +46,7 @@
                 </a>
 
                 <a
-                    href="/courses"
+                    href="{{ route('applications.create') }}"
                     wire:navigate
                     class="flex flex-col items-center gap-1 text-slate-600 hover:text-orange-600 transition"
                 >

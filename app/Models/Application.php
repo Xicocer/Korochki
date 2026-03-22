@@ -12,7 +12,7 @@ class Application extends Model
 
     protected $fillable = [
         'user_id', 'course_id', 'start_date',
-        'payment_method', 'status', 'review',
+        'payment_method', 'status',
     ];
 
     protected $casts = [

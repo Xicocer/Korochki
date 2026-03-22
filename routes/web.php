@@ -14,6 +14,9 @@ Route::get('/welcom-page', $welcomPage)->name('welcom-page');
 Route::livewire('/dashboard', 'pages::user-dashboard')
     ->middleware('auth')
     ->name('dashboard');
+Route::livewire('/create-application', 'pages::create-application')
+    ->middleware('auth')
+    ->name('applications.create');
 Route::post('/logout', function () {
     Auth::guard('web')->logout();
     request()->session()->invalidate();
