@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 class Application extends Model
 {
@@ -36,5 +38,10 @@ class Application extends Model
             'course_title' => $this->course->title,
             'status' => $this->status,
         ];
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }
