@@ -34,6 +34,11 @@ new class extends Component
         session()->regenerate();
 
         if (auth()->user()?->isAdmin()) {
+            if (Route::has('admin.applications')) {
+                $this->redirectRoute('admin.applications', navigate: true);
+                return;
+            }
+
             $this->redirect('/admin', navigate: true);
             return;
         }

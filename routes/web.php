@@ -14,6 +14,15 @@ Route::get('/welcom-page', $welcomPage)->name('welcom-page');
 Route::livewire('/dashboard', 'pages::user-dashboard')
     ->middleware('auth')
     ->name('dashboard');
+Route::livewire('/admin', 'pages::admin-applications')
+    ->middleware('auth')
+    ->name('admin.applications');
+Route::livewire('/admin/slides', 'pages::admin-slider')
+    ->middleware('auth')
+    ->name('admin.slides');
+Route::livewire('/admin/users', 'pages::admin-users')
+    ->middleware('auth')
+    ->name('admin.users');
 Route::livewire('/create-application', 'pages::create-application')
     ->middleware('auth')
     ->name('applications.create');
