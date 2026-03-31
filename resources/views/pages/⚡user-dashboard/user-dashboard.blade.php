@@ -5,34 +5,44 @@
             Мои заявки
         </h1>
 
-        <p class="text-sm text-slate-500 mt-1">
+        <p class="mt-1 text-sm text-slate-500">
             Здесь отображаются все ваши заявки на обучение
         </p>
     </div>
 
     <div class="space-y-4">
 
-        @forelse($applications as $application)
-            <div class="bg-white rounded-3xl shadow-md p-5 border border-slate-100 hover:shadow-lg transition">
+        @forelse ($applications as $application)
+            @php($isCompleted = $application->status === $completedStatus)
+            @php($hasReview = $application->reviews->isNotEmpty())
 
-                <div class="flex justify-between items-start">
+            <article
+                wire:key="dashboard-application-{{ $application->id }}"
+                @if ($isCompleted)
+                    wire:click="openReviewModal({{ $application->id }})"
+                    class="cursor-pointer rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
+                @else
+                    class="rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:shadow-lg"
+                @endif
+            >
+
+                <div class="flex items-start justify-between">
 
                     <div>
-                        <h2 class="font-semibold text-slate-800 text-lg">
+                        <h2 class="text-lg font-semibold text-slate-800">
                             {{ $application->course->title }}
                         </h2>
 
-                        <p class="text-sm text-slate-500 mt-1">
-                            Дата начала:
-                            {{ $application->start_date->format('d.m.Y') }}
+                        <p class="mt-1 text-sm text-slate-500">
+                            Дата начала: {{ $application->start_date->format('d.m.Y') }}
                         </p>
                     </div>
 
                     <span class="
-                        px-3 py-1 rounded-full text-xs font-medium
-                        @if($application->status === 'Обучение завершено')
+                        rounded-full px-3 py-1 text-xs font-medium
+                        @if ($application->status === $completedStatus)
                             bg-green-100 text-green-700
-                        @elseif($application->status === 'Новая')
+                        @elseif ($application->status === 'Новая')
                             bg-yellow-100 text-yellow-700
                         @else
                             bg-slate-100 text-slate-600
@@ -50,18 +60,16 @@
                     </span>
                 </div>
 
-                @if($application->status === 'Обучение завершено')
-                    <button
-                        class="mt-4 w-full py-3 rounded-2xl bg-orange-50 text-orange-600 font-medium hover:bg-orange-100 transition"
-                    >
-                        Оставить отзыв
-                    </button>
+                @if ($isCompleted)
+                    <div class="mt-4 rounded-2xl bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700">
+                        {{ $hasReview ? 'Нажмите, чтобы изменить отзыв' : 'Нажмите, чтобы оставить отзыв' }}
+                    </div>
                 @endif
 
-            </div>
+            </article>
 
         @empty
-            <div class="bg-white rounded-3xl p-8 text-center shadow-sm border border-slate-100">
+            <div class="rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
                 <p class="text-slate-500">
                     У вас пока нет заявок
                 </p>
@@ -69,5 +77,7 @@
         @endforelse
 
     </div>
+
+    <livewire:review-modal />
 
 </div>
