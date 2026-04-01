@@ -17,9 +17,20 @@ new class extends Component
         'Заявка отклоненна',
     ];
 
+    public string $statusFilter = 'all';
+
     public function mount(): void
     {
         abort_unless(auth()->user()?->isAdmin(), 403);
+    }
+
+    public function setStatusFilter(string $status): void
+    {
+        if ($status !== 'all' && ! in_array($status, $this->statuses, true)) {
+            return;
+        }
+
+        $this->statusFilter = $status;
     }
 
     public function updateStatus(int $applicationId, string $newStatus): void
@@ -63,11 +74,22 @@ new class extends Component
 
     public function render()
     {
+        $query = Application::query()
+            ->with(['user:id,full_name', 'course:id,title'])
+            ->latest();
+
+        if ($this->statusFilter !== 'all') {
+            $query->where('status', $this->statusFilter);
+        }
+
+        $statusTotals = Application::query()
+            ->pluck('status')
+            ->countBy();
+
         return $this->view([
-            'applications' => Application::query()
-                ->with(['user:id,full_name', 'course:id,title'])
-                ->latest()
-                ->get(),
+            'applications' => $query->get(),
+            'statusTotals' => $statusTotals,
+            'totalApplications' => $statusTotals->sum(),
         ])->layout('layouts::admin', [
             'title' => 'Заявки пользователей',
         ]);
