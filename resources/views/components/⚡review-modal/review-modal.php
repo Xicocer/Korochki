@@ -22,7 +22,7 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'reviewText' => ['required', 'string', 'min:5', 'max:1000'],
+            'reviewText' => ['required', 'string', 'min:5', 'max:1000', 'not_regex:/<[^>]*>/'],
         ];
     }
 
@@ -67,7 +67,7 @@ new class extends Component
                 'user_id' => auth()->id(),
             ],
             [
-                'review' => $validated['reviewText'],
+                'review' => trim(strip_tags($validated['reviewText'])),
             ]
         );
 

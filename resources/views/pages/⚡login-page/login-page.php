@@ -12,7 +12,7 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'identifier' => ['required'],
+            'identifier' => ['required', 'not_regex:/<[^>]*>/'],
             'password' => ['required'],
         ];
     }

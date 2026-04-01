@@ -16,11 +16,11 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'login' => ['required', 'regex:/^[A-Za-z0-9]{6,}$/', 'unique:users,login'],
+            'login' => ['required', 'regex:/^[A-Za-z0-9]{6,}$/', 'not_regex:/<[^>]*>/', 'unique:users,login'],
             'password' => ['required', 'min:8'],
-            'full_name' => ['required', 'regex:/^[\p{Cyrillic}\s]+$/u'],
+            'full_name' => ['required', 'regex:/^[\p{Cyrillic}\s]+$/u', 'not_regex:/<[^>]*>/u'],
             'phone' => ['required', 'regex:/^(\+7|8) \(\d{3}\) \d{3}-\d{2}-\d{2}$/'],
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => ['required', 'email', 'not_regex:/<[^>]*>/', 'unique:users,email'],
         ];
     }
 
@@ -37,6 +37,9 @@ new class extends Component
     {
         $this->phone = $this->normalizePhone($this->phone);
         $validated = $this->validate();
+        $validated['login'] = $this->cleanText($validated['login']);
+        $validated['full_name'] = $this->cleanText($validated['full_name']);
+        $validated['email'] = trim(strtolower($validated['email']));
 
         User::create([
             'login' => $validated['login'],
@@ -112,5 +115,13 @@ new class extends Component
         }
 
         return $formatted;
+    }
+
+    protected function cleanText(string $value): string
+    {
+        $value = strip_tags($value);
+        $value = preg_replace('/\s+/', ' ', $value);
+
+        return trim((string) $value);
     }
 };
