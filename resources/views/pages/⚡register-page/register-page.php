@@ -18,9 +18,17 @@ new class extends Component
         return [
             'login' => ['required', 'regex:/^[A-Za-z0-9]{6,}$/', 'not_regex:/<[^>]*>/', 'unique:users,login'],
             'password' => ['required', 'min:8'],
-            'full_name' => ['required', 'regex:/^[\p{Cyrillic}\s]+$/u', 'not_regex:/<[^>]*>/u'],
+            'full_name' => ['required', 'regex:/^[\p{Cyrillic}-]+\s+[\p{Cyrillic}-]+\s+[\p{Cyrillic}-]+$/u', 'not_regex:/<[^>]*>/u'],
             'phone' => ['required', 'regex:/^(\+7|8) \(\d{3}\) \d{3}-\d{2}-\d{2}$/'],
             'email' => ['required', 'email', 'not_regex:/<[^>]*>/', 'unique:users,email'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'login.regex' => 'Логин должен содержать только латинские буквы и цифры, минимум 6 символов.',
+            'full_name.regex' => 'ФИО должно быть в формате: Фамилия Имя Отчество (только кириллица).',
         ];
     }
 
@@ -35,6 +43,9 @@ new class extends Component
 
     public function register()
     {
+        $this->login = trim($this->login);
+        $this->full_name = preg_replace('/\s+/', ' ', trim($this->full_name));
+        $this->email = trim(strtolower($this->email));
         $this->phone = $this->normalizePhone($this->phone);
         $validated = $this->validate();
         $validated['login'] = $this->cleanText($validated['login']);
