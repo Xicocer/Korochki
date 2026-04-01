@@ -1,8 +1,8 @@
 <div>
     @if ($isOpen)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4" wire:click="close">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 lg:px-8" wire:click="close">
             <div
-                class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+                class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl sm:max-w-lg lg:p-7"
                 wire:click.stop
             >
                 <h2 class="text-xl font-bold text-slate-800">

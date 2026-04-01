@@ -1,16 +1,16 @@
-<div class="space-y-5">
+<div class="space-y-6">
 
     <div>
-        <h1 class="text-2xl font-bold text-slate-800">
+        <h1 class="text-2xl font-bold text-slate-800 lg:text-3xl">
             Мои заявки
         </h1>
 
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-slate-500 lg:text-base">
             Здесь отображаются все ваши заявки на обучение
         </p>
     </div>
 
-    <div class="space-y-4">
+    <div class="grid gap-4 xl:grid-cols-2">
 
         @forelse ($applications as $application)
             @php($isCompleted = $application->status === $completedStatus)
@@ -20,13 +20,13 @@
                 wire:key="dashboard-application-{{ $application->id }}"
                 @if ($isCompleted)
                     wire:click="openReviewModal({{ $application->id }})"
-                    class="cursor-pointer rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
+                    class="h-full cursor-pointer rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
                 @else
-                    class="rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:shadow-lg"
+                    class="h-full rounded-3xl border border-slate-100 bg-white p-5 shadow-md transition hover:shadow-lg"
                 @endif
             >
 
-                <div class="flex items-start justify-between">
+                <div class="flex items-start justify-between gap-3">
 
                     <div>
                         <h2 class="text-lg font-semibold text-slate-800">
@@ -69,7 +69,7 @@
             </article>
 
         @empty
-            <div class="rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm">
+            <div class="rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-sm xl:col-span-2">
                 <p class="text-slate-500">
                     У вас пока нет заявок
                 </p>

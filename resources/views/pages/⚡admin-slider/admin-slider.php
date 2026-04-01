@@ -23,8 +23,8 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255', 'not_regex:/<[^>]*>/'],
+            'description' => ['required', 'string', 'max:255', 'not_regex:/<[^>]*>/'],
             'image' => ['required', 'image', 'max:2048'],
             'is_active' => ['required', 'boolean'],
             'order' => ['required', 'integer'],
@@ -37,8 +37,8 @@ new class extends Component
         $imagePath = $this->image->store('slides', 'public');
 
         MarketingSlide::query()->create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
+            'title' => trim(strip_tags($validated['title'])),
+            'description' => trim(strip_tags($validated['description'])),
             'image_path' => $imagePath,
             'is_active' => $validated['is_active'],
             'order' => $validated['order'],

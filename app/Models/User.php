@@ -19,6 +19,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
     public function isAdmin(): bool
     {
         return $this->login === 'Admin' || $this->role === 'admin';

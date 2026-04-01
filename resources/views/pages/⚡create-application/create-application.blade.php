@@ -1,8 +1,8 @@
-<div class="max-w-md mx-auto mt-6 space-y-6">
+<div class="mx-auto mt-2 w-full max-w-4xl space-y-6">
 
     <div>
-        <h1 class="text-2xl font-bold text-slate-800">Оформить заявку</h1>
-        <p class="text-sm text-slate-500 mt-1">Выберите курс и параметры обучения</p>
+        <h1 class="text-2xl font-bold text-slate-800 lg:text-3xl">Оформить заявку</h1>
+        <p class="mt-1 text-sm text-slate-500 lg:text-base">Выберите курс и параметры обучения</p>
     </div>
 
     @if (session()->has('success'))
@@ -11,62 +11,64 @@
         </div>
     @endif
 
-    <form wire:submit="submit" class="space-y-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-md">
+    <form wire:submit="submit" class="space-y-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-md lg:p-8">
 
-        <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Курс</label>
-            <select
-                wire:model="course_id"
-                class="w-full rounded-xl border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-300"
-            >
-                <option value="">-- Выберите курс --</option>
-                @foreach ($courses as $course)
-                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                @endforeach
-            </select>
-            @error('course_id')
-                <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Дата начала обучения</label>
-            <input
-                type="date"
-                wire:model="start_date"
-                class="w-full rounded-xl border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-300"
-            >
-            @error('start_date')
-                <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div>
-            <label class="mb-2 block text-sm font-medium text-slate-700">Способ оплаты</label>
-            <div class="flex gap-3">
-                <label class="flex-1 cursor-pointer">
-                    <input type="radio" wire:model="payment_method" value="cash" class="hidden">
-                    <div class="rounded-xl border border-slate-200 p-3 text-center transition hover:border-orange-400 {{ $payment_method === 'cash' ? 'border-orange-300 bg-orange-50' : '' }}">
-                        Наличными
-                    </div>
-                </label>
-                <label class="flex-1 cursor-pointer">
-                    <input type="radio" wire:model="payment_method" value="transfer" class="hidden">
-                    <div class="rounded-xl border border-slate-200 p-3 text-center transition hover:border-orange-400 {{ $payment_method === 'transfer' ? 'border-orange-300 bg-orange-50' : '' }}">
-                        По номеру телефона
-                    </div>
-                </label>
+        <div class="grid gap-5 lg:grid-cols-2">
+            <div class="lg:col-span-2">
+                <label class="mb-1 block text-sm font-medium text-slate-700">Курс</label>
+                <select
+                    wire:model="course_id"
+                    class="w-full rounded-xl border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                >
+                    <option value="">-- Выберите курс --</option>
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}">{{ $course->title }}</option>
+                    @endforeach
+                </select>
+                @error('course_id')
+                    <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                @enderror
             </div>
-            @error('payment_method')
-                <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
-            @enderror
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-slate-700">Дата начала обучения</label>
+                <input
+                    type="date"
+                    wire:model="start_date"
+                    class="w-full rounded-xl border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                >
+                @error('start_date')
+                    <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Способ оплаты</label>
+                <div class="flex gap-3">
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" wire:model="payment_method" value="cash" class="hidden">
+                        <div class="rounded-xl border border-slate-200 p-3 text-center transition hover:border-orange-400 {{ $payment_method === 'cash' ? 'border-orange-300 bg-orange-50' : '' }}">
+                            Наличными
+                        </div>
+                    </label>
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" wire:model="payment_method" value="transfer" class="hidden">
+                        <div class="rounded-xl border border-slate-200 p-3 text-center transition hover:border-orange-400 {{ $payment_method === 'transfer' ? 'border-orange-300 bg-orange-50' : '' }}">
+                            По номеру телефона
+                        </div>
+                    </label>
+                </div>
+                @error('payment_method')
+                    <span class="mt-1 block text-sm text-red-500">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
 
         <button
             type="submit"
             wire:loading.attr="disabled"
             wire:target="submit"
-            class="w-full rounded-2xl bg-orange-600 py-3 font-semibold text-white transition hover:bg-orange-700"
+            class="w-full rounded-2xl bg-orange-600 py-3 font-semibold text-white transition hover:bg-orange-700 lg:w-auto lg:min-w-64"
         >
             <span wire:loading.remove wire:target="submit">Отправить заявку</span>
             <span wire:loading wire:target="submit">Отправляем...</span>
