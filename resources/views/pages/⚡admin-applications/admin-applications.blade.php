@@ -1,4 +1,4 @@
-<div class="space-y-6 px-4 py-6">
+<div class="space-y-6">
 
     <h1 class="text-2xl font-bold text-slate-800">Заявки пользователей</h1>
 
@@ -55,9 +55,9 @@
                 @forelse ($applications as $application)
                     @php($canDelete = in_array($application->status, $deletableStatuses, true))
                     <tr wire:key="admin-application-{{ $application->id }}" class="transition hover:bg-slate-50">
-                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->user?->full_name ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->course?->title ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->start_date?->format('d.m.Y') ?? '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->user?->full_name ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->course?->title ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-slate-700">{{ $application->start_date?->format('d.m.Y') ?? '-' }}</td>
                         <td class="px-4 py-3">
                             <select
                                 wire:change="updateStatus({{ $application->id }}, $event.target.value)"
@@ -81,7 +81,7 @@
                                     Удалить
                                 </button>
                             @else
-                                <span class="text-sm text-slate-400">Нельзя удалить</span>
+                                <span class="text-sm text-slate-400">Недоступно</span>
                             @endif
                         </td>
                     </tr>

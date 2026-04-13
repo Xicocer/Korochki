@@ -8,7 +8,7 @@
 
         <div>
             <input
-                wire:model="login"
+                wire:model.live.debounce.250ms="login"
                 type="text"
                 placeholder="Логин"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
@@ -20,7 +20,7 @@
 
         <div>
             <input
-                wire:model="password"
+                wire:model.live.debounce.250ms="password"
                 type="password"
                 placeholder="Пароль"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
@@ -32,9 +32,9 @@
 
         <div>
             <input
-                wire:model="full_name"
+                wire:model.live.debounce.250ms="full_name"
                 type="text"
-                placeholder="ФИО"
+                placeholder="Фамилия Имя Отчество"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
             >
             @error('full_name')
@@ -58,9 +58,7 @@
                     let national = ''
 
                     if (raw.trim().startsWith('+')) {
-                        if (digits.startsWith('7')) {
-                            national = digits.slice(1)
-                        } else if (digits.startsWith('8')) {
+                        if (digits.startsWith('7') || digits.startsWith('8')) {
                             national = digits.slice(1)
                         } else if (digits.startsWith('9')) {
                             national = digits
@@ -112,7 +110,7 @@
                 type="text"
                 inputmode="tel"
                 autocomplete="tel"
-                placeholder="Введите номер телефона"
+                placeholder="+7/8 (XXX) XXX-XX-XX"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
             >
             @error('phone')
@@ -122,7 +120,7 @@
 
         <div class="md:col-span-2">
             <input
-                wire:model="email"
+                wire:model.live.debounce.250ms="email"
                 type="email"
                 placeholder="Email"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
@@ -134,16 +132,19 @@
 
         <button
             type="submit"
+            wire:loading.attr="disabled"
+            wire:target="register"
             class="w-full rounded-2xl bg-orange-600 py-4 font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700 md:col-span-2"
         >
-            Зарегистрироваться
+            <span wire:loading.remove wire:target="register">Создать аккаунт</span>
+            <span wire:loading wire:target="register">Сохраняем...</span>
         </button>
 
     </form>
 
     <div class="mt-6 text-center">
         <a
-            href="/login"
+            href="{{ route('login') }}"
             wire:navigate
             class="text-sm text-slate-500 transition hover:text-orange-600"
         >

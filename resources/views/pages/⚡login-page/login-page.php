@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 new class extends Component
@@ -12,8 +16,8 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'identifier' => ['required', 'not_regex:/<[^>]*>/'],
-            'password' => ['required'],
+            'identifier' => ['required', 'string', 'max:255', 'not_regex:/<[^>]*>/'],
+            'password' => ['required', 'string'],
         ];
     }
 
@@ -22,24 +26,39 @@ new class extends Component
         $validated = $this->validate();
         $identifier = trim($validated['identifier']);
 
-        $credentials = filter_var($identifier, FILTER_VALIDATE_EMAIL)
-            ? ['email' => $identifier, 'password' => $validated['password']]
-            : ['login' => $identifier, 'password' => $validated['password']];
-
-        if (! Auth::attempt($credentials)) {
-            $this->addError('identifier', 'Неверный логин/email или пароль');
+        if (RateLimiter::tooManyAttempts($this->throttleKey($identifier), 5)) {
+            $seconds = RateLimiter::availableIn($this->throttleKey($identifier));
+            $this->addError('identifier', "Слишком много попыток входа. Повторите через {$seconds} сек.");
             return;
         }
 
+        $user = filter_var($identifier, FILTER_VALIDATE_EMAIL)
+            ? User::query()->where('email', Str::lower($identifier))->first()
+            : User::query()->where('login', $identifier)->first();
+
+        if (! $user) {
+            RateLimiter::hit($this->throttleKey($identifier), 60);
+            $this->addError(
+                'identifier',
+                filter_var($identifier, FILTER_VALIDATE_EMAIL)
+                    ? 'Пользователь с таким email не найден.'
+                    : 'Пользователь с таким логином не найден.'
+            );
+            return;
+        }
+
+        if (! Hash::check($validated['password'], $user->password)) {
+            RateLimiter::hit($this->throttleKey($identifier), 60);
+            $this->addError('password', 'Введен неверный пароль.');
+            return;
+        }
+
+        Auth::login($user);
         session()->regenerate();
+        RateLimiter::clear($this->throttleKey($identifier));
 
-        if (auth()->user()?->isAdmin()) {
-            if (Route::has('admin.applications')) {
-                $this->redirectRoute('admin.applications', navigate: true);
-                return;
-            }
-
-            $this->redirect('/admin', navigate: true);
+        if ($user->isAdmin()) {
+            $this->redirectRoute('admin.applications', navigate: true);
             return;
         }
 
@@ -49,5 +68,10 @@ new class extends Component
         }
 
         $this->redirectRoute('home', navigate: true);
+    }
+
+    protected function throttleKey(string $identifier): string
+    {
+        return sprintf('login:%s|%s', Str::lower($identifier), request()->ip());
     }
 };

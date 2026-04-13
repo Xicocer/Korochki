@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Livewire\Component;
 
@@ -28,7 +29,8 @@ new class extends Component
     {
         return [
             'login.regex' => 'Логин должен содержать только латинские буквы и цифры, минимум 6 символов.',
-            'full_name.regex' => 'ФИО должно быть в формате: Фамилия Имя Отчество (только кириллица).',
+            'full_name.regex' => 'ФИО должно содержать ровно 3 слова на кириллице: Фамилия Имя Отчество.',
+            'phone.regex' => 'Телефон должен быть в формате +7/8 (XXX) XXX-XX-XX.',
         ];
     }
 
@@ -43,21 +45,27 @@ new class extends Component
 
     public function register()
     {
+        if (RateLimiter::tooManyAttempts($this->throttleKey(), 6)) {
+            $seconds = RateLimiter::availableIn($this->throttleKey());
+            $this->addError('login', "Слишком много попыток регистрации. Повторите через {$seconds} сек.");
+            return;
+        }
+
+        RateLimiter::hit($this->throttleKey(), 60);
+
         $this->login = trim($this->login);
         $this->full_name = preg_replace('/\s+/', ' ', trim($this->full_name));
         $this->email = trim(strtolower($this->email));
         $this->phone = $this->normalizePhone($this->phone);
+
         $validated = $this->validate();
-        $validated['login'] = $this->cleanText($validated['login']);
-        $validated['full_name'] = $this->cleanText($validated['full_name']);
-        $validated['email'] = trim(strtolower($validated['email']));
 
         User::create([
-            'login' => $validated['login'],
+            'login' => $this->cleanText($validated['login']),
             'password' => Hash::make($validated['password']),
-            'full_name' => $validated['full_name'],
+            'full_name' => $this->cleanText($validated['full_name']),
             'phone' => $validated['phone'],
-            'email' => $validated['email'],
+            'email' => trim(strtolower($validated['email'])),
             'role' => 'user',
         ]);
 
@@ -81,9 +89,7 @@ new class extends Component
         $national = '';
 
         if (str_starts_with($raw, '+')) {
-            if (str_starts_with($digits, '7')) {
-                $national = substr($digits, 1);
-            } elseif (str_starts_with($digits, '8')) {
+            if (str_starts_with($digits, '7') || str_starts_with($digits, '8')) {
                 $national = substr($digits, 1);
             } elseif (str_starts_with($digits, '9')) {
                 $national = $digits;
@@ -134,5 +140,10 @@ new class extends Component
         $value = preg_replace('/\s+/', ' ', $value);
 
         return trim((string) $value);
+    }
+
+    protected function throttleKey(): string
+    {
+        return sprintf('register:%s', request()->ip());
     }
 };

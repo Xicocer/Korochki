@@ -10,11 +10,11 @@
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Поделитесь впечатлением о пройденном курсе
+                    После сохранения отзыв отправится на модерацию.
                 </p>
 
                 <textarea
-                    wire:model="reviewText"
+                    wire:model.live.debounce.250ms="reviewText"
                     rows="5"
                     placeholder="Ваш отзыв..."
                     class="mt-4 w-full resize-none rounded-xl border border-slate-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"

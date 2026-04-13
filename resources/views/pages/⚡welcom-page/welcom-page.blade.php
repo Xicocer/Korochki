@@ -5,8 +5,8 @@
             Корочки.есть
         </h1>
 
-        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-500 lg:mx-0 lg:text-base">
-            Онлайн-запись на курсы дополнительного профессионального образования
+        <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 lg:mx-0 lg:text-base">
+            Онлайн-запись на курсы дополнительного профессионального образования.
         </p>
     </section>
 
@@ -14,27 +14,73 @@
         <livewire:marketing-slider />
     </section>
 
-    <section class="mx-auto mt-10 grid w-full max-w-2xl gap-4 sm:grid-cols-2">
-        <a
-            href="/register"
-            wire:navigate
-            class="w-full rounded-2xl bg-orange-600 py-4 text-center font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700"
-        >
-            Регистрация
-        </a>
+    @auth
+        <section class="mx-auto mt-10 grid w-full max-w-4xl gap-3 sm:grid-cols-3">
+            <a
+                href="{{ route('dashboard') }}"
+                wire:navigate
+                class="w-full rounded-2xl bg-orange-600 py-4 text-center font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700"
+            >
+                Личный кабинет
+            </a>
 
-        <a
-            href="{{ route('login') }}"
-            wire:navigate
-            class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
-        >
-            Вход
-        </a>
-    </section>
+            @if (auth()->user()->isAdmin())
+                <a
+                    href="{{ route('admin.applications') }}"
+                    wire:navigate
+                    class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                    Админ-панель
+                </a>
+            @else
+                <a
+                    href="{{ route('applications.create') }}"
+                    wire:navigate
+                    class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                    Новая заявка
+                </a>
+            @endif
+
+            <a
+                href="{{ route('reviews.index') }}"
+                wire:navigate
+                class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+                Отзывы
+            </a>
+        </section>
+    @else
+        <section class="mx-auto mt-10 grid w-full max-w-4xl gap-3 sm:grid-cols-3">
+            <a
+                href="{{ route('register') }}"
+                wire:navigate
+                class="w-full rounded-2xl bg-orange-600 py-4 text-center font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700"
+            >
+                Регистрация
+            </a>
+
+            <a
+                href="{{ route('login') }}"
+                wire:navigate
+                class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+                Вход
+            </a>
+
+            <a
+                href="{{ route('reviews.index') }}"
+                wire:navigate
+                class="w-full rounded-2xl border border-slate-200 py-4 text-center font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+                Отзывы
+            </a>
+        </section>
+    @endauth
 
     <section class="mt-auto pt-10 text-center lg:pt-14">
         <p class="text-xs text-slate-400 lg:text-sm">
-            Образование • Развитие • Возможности
+            Образование * Развитие * Возможности
         </p>
     </section>
 
