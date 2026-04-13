@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $pageTitle = $title ?? 'Корочки.есть';
-        $metaDescription = $metaDescription ?? 'Личный кабинет пользователя для управления заявками и обучением.';
-        $metaKeywords = $metaKeywords ?? 'личный кабинет, заявки, курсы, обучение';
+        $metaDescription = $metaDescription ?? 'Личный кабинет для управления заявками и отзывами.';
+        $metaKeywords = $metaKeywords ?? 'кабинет, заявки, отзывы, курсы';
     @endphp
 
     <title>{{ $pageTitle }}</title>
@@ -15,13 +15,15 @@
     <meta name="robots" content="noindex,nofollow">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+
+    @livewireStyles
 
     <style>
         [x-cloak] { display: none !important; }
@@ -37,43 +39,53 @@
             Учебный портал
         </h1>
 
-        <nav class="flex flex-col gap-3">
-
+        <nav class="flex flex-col gap-2">
             <a
                 href="{{ route('dashboard') }}"
                 wire:navigate
-                class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                class="rounded-2xl px-4 py-3 transition {{ request()->routeIs('dashboard') ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-700 hover:bg-orange-50 hover:text-orange-600' }}"
             >
-                <span class="text-xl">📄</span>
-                <span class="font-medium">Мои заявки</span>
+                Мои заявки
+            </a>
+
+            <a
+                href="{{ route('dashboard.reviews') }}"
+                wire:navigate
+                class="rounded-2xl px-4 py-3 transition {{ request()->routeIs('dashboard.reviews') ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-700 hover:bg-orange-50 hover:text-orange-600' }}"
+            >
+                Мои отзывы
             </a>
 
             <a
                 href="{{ route('applications.create') }}"
                 wire:navigate
-                class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                class="rounded-2xl px-4 py-3 transition {{ request()->routeIs('applications.create') ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-700 hover:bg-orange-50 hover:text-orange-600' }}"
             >
-                <span class="text-xl">🎓</span>
-                <span class="font-medium">Курсы</span>
+                Новая заявка
+            </a>
+
+            <a
+                href="{{ route('reviews.index') }}"
+                wire:navigate
+                class="rounded-2xl px-4 py-3 transition {{ request()->routeIs('reviews.index') ? 'bg-orange-50 font-semibold text-orange-600' : 'text-slate-700 hover:bg-orange-50 hover:text-orange-600' }}"
+            >
+                Все отзывы
             </a>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button
                     type="submit"
-                    class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-red-500 transition hover:bg-red-50"
+                    class="mt-2 w-full rounded-2xl px-4 py-3 text-left text-red-500 transition hover:bg-red-50"
                 >
-                    <span class="text-xl">🚪</span>
-                    <span class="font-medium">Выход</span>
+                    Выйти
                 </button>
             </form>
-
         </nav>
     </aside>
 
     <div class="flex flex-1 flex-col">
-
-        <header class="sticky top-0 z-10 border-b border-slate-100 bg-white px-6 py-5 lg:px-10">
+        <header class="sticky top-0 z-10 border-b border-slate-100 bg-white px-4 py-4 sm:px-6 lg:px-10">
             <h1 class="text-lg font-bold tracking-tight text-slate-800">
                 Учебный портал
             </h1>
@@ -83,41 +95,26 @@
             {{ $slot }}
         </main>
 
-        <nav class="sticky bottom-0 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] backdrop-blur lg:hidden">
-            <div class="mx-auto flex w-full max-w-md items-center justify-around py-1">
-
-                <a
-                    href="{{ route('dashboard') }}"
-                    wire:navigate
-                    class="flex flex-col items-center gap-1 text-slate-600 transition hover:text-orange-600"
-                >
-                    <span class="text-xl">📄</span>
-                    <span class="text-xs font-medium">Мои заявки</span>
+        <nav class="sticky bottom-0 border-t border-slate-200 bg-white/95 px-3 py-3 backdrop-blur lg:hidden">
+            <div class="mx-auto grid w-full max-w-md grid-cols-5 items-center gap-1 text-center text-[11px] font-medium">
+                <a href="{{ route('dashboard') }}" wire:navigate class="{{ request()->routeIs('dashboard') ? 'text-orange-600' : 'text-slate-500' }}">
+                    Заявки
                 </a>
-
-                <a
-                    href="{{ route('applications.create') }}"
-                    wire:navigate
-                    class="flex flex-col items-center gap-1 text-slate-600 transition hover:text-orange-600"
-                >
-                    <span class="text-xl">🎓</span>
-                    <span class="text-xs font-medium">Курсы</span>
+                <a href="{{ route('dashboard.reviews') }}" wire:navigate class="{{ request()->routeIs('dashboard.reviews') ? 'text-orange-600' : 'text-slate-500' }}">
+                    Мои отзывы
                 </a>
-
+                <a href="{{ route('applications.create') }}" wire:navigate class="{{ request()->routeIs('applications.create') ? 'text-orange-600' : 'text-slate-500' }}">
+                    Новая
+                </a>
+                <a href="{{ route('reviews.index') }}" wire:navigate class="{{ request()->routeIs('reviews.index') ? 'text-orange-600' : 'text-slate-500' }}">
+                    Отзывы
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button
-                        type="submit"
-                        class="flex flex-col items-center gap-1 text-red-500 transition hover:text-red-600"
-                    >
-                        <span class="text-xl">🚪</span>
-                        <span class="text-xs font-medium">Выход</span>
-                    </button>
+                    <button type="submit" class="text-red-500">Выйти</button>
                 </form>
-
             </div>
         </nav>
-
     </div>
 </div>
 

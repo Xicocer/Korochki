@@ -4,17 +4,11 @@
         Вход
     </h1>
 
-    @if ($errors->any())
-        <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            Проверьте данные и попробуйте еще раз
-        </div>
-    @endif
-
     <form wire:submit="authenticate" class="mt-8 space-y-4">
 
         <div>
             <input
-                wire:model="identifier"
+                wire:model.live.debounce.250ms="identifier"
                 type="text"
                 placeholder="Логин или email"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
@@ -27,7 +21,7 @@
 
         <div>
             <input
-                wire:model="password"
+                wire:model.live.debounce.250ms="password"
                 type="password"
                 placeholder="Пароль"
                 class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-orange-500"
@@ -45,7 +39,7 @@
             class="w-full rounded-2xl bg-orange-600 py-4 font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700"
         >
             <span wire:loading.remove wire:target="authenticate">Войти</span>
-            <span wire:loading wire:target="authenticate">Входим...</span>
+            <span wire:loading wire:target="authenticate">Проверяем...</span>
         </button>
 
     </form>
@@ -56,7 +50,7 @@
             wire:navigate
             class="text-sm text-slate-500 transition hover:text-orange-600"
         >
-            Нет аккаунта? Регистрация
+            Нет аккаунта? Зарегистрируйтесь
         </a>
     </div>
 
